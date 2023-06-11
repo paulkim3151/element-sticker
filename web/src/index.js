@@ -117,6 +117,17 @@ class App extends Component {
     );
   }
 
+  addMySticker(id) {
+    let myStickerIds = this.state.myStickerIds.slice(0);
+    if (!myStickerIds.includes(id)) {
+      const newStickerIds = this.state.myStickerIds.slice(0);
+      newStickerIds.push(id);
+      this.setState({
+        myStickerIds: newStickerIds,
+      });
+    }
+  }
+
   updateMyStickerIds(evt) {
     const checked = evt.currentTarget.checked;
     const packId = evt.currentTarget.getAttribute("data-sticker-id");
@@ -126,7 +137,6 @@ class App extends Component {
     } else {
       newStickerIds = newStickerIds.filter((id) => id !== packId);
     }
-    console.log(newStickerIds);
     this.setState({
       myStickerIds: newStickerIds,
     });
@@ -351,6 +361,8 @@ class App extends Component {
               id=${pack.id}
               pack=${pack}
               change=${this.updateMyStickerIds.bind(this)}
+              myStickerIds=${this.state.myStickerIds}
+              addMySticker=${this.addMySticker.bind(this)}
             />`
         )}
         <${NavBarItem}
@@ -433,38 +445,54 @@ const scrollToSection = (evt, id) => {
   evt.preventDefault();
 };
 
-const NavBarItem = ({ pack, iconOverride = null, change }) => html`
-  <a
-    href="#pack-${pack.id}"
-    id="nav-${pack.id}"
-    data-pack-id=${pack.id}
-    title=${pack.title}
-    onClick=${isMobileSafari
-      ? (evt) => scrollToSection(evt, pack.id)
-      : undefined}
-  >
-    <div class="sticker">
-      ${iconOverride
-        ? html` <span class="icon icon-${iconOverride}" /> `
-        : html`
-            <img
-              src=${makeThumbnailURL(pack.stickers[0].url)}
-              alt=${pack.stickers[0].body}
-              class="visible"
-            />
-          `}
-    </div>
-    <div class="sticker-checkbox">
-      ${pack.id !== "frequently-used" &&
-      pack.id !== "settings" &&
-      html`<input
-        type="checkbox"
-        data-sticker-id=${pack.id}
-        onchange=${change}
-      />`}
-    </div>
-  </a>
-`;
+const NavBarItem = ({
+  pack,
+  iconOverride = null,
+  change,
+  myStickerIds,
+  addMySticker,
+}) => {
+  const handleItemClicked = (evt) => {
+    if (!myStickerIds.includes(pack.id)) {
+      addMySticker(pack.id);
+    }
+
+    if (isMobileSafari) {
+      scrollToSection(evt, pack.id);
+    }
+  };
+  return html`
+    <a
+      href="#pack-${pack.id}"
+      id="nav-${pack.id}"
+      data-pack-id=${pack.id}
+      title=${pack.title}
+      onClick=${handleItemClicked}
+    >
+      <div class="sticker">
+        ${iconOverride
+          ? html` <span class="icon icon-${iconOverride}" /> `
+          : html`
+              <img
+                src=${makeThumbnailURL(pack.stickers[0].url)}
+                alt=${pack.stickers[0].body}
+                class="visible"
+              />
+            `}
+      </div>
+      <div class="sticker-checkbox">
+        ${pack.id !== "frequently-used" &&
+        pack.id !== "settings" &&
+        html`<input
+          type="checkbox"
+          checked=${myStickerIds.includes(pack.id)}
+          data-sticker-id=${pack.id}
+          onchange=${change}
+        />`}
+      </div>
+    </a>
+  `;
+};
 
 const Pack = ({ pack, send, enabled }) => html`
   <section
