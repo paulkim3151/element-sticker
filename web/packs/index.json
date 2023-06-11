@@ -1,6 +1,7 @@
 {
   "packs": [
-    "editkaoemoticon.json"
+    "editkaoemoticon.json",
+    "TheMedes.json"
   ],
   "homeserver_url": "https://matrix-client.matrix.org"
 }
