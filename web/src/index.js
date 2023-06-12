@@ -490,6 +490,7 @@ const NavBarItem = ({
           onchange=${(evt) => {
             change(evt);
             if (evt.currentTarget.checked) {
+              location.hash = `pack-${pack.id}`;
               scrollToSection(evt, pack.id);
             }
           }}
