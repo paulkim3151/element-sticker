@@ -487,7 +487,12 @@ const NavBarItem = ({
           type="checkbox"
           checked=${myStickerIds.includes(pack.id)}
           data-sticker-id=${pack.id}
-          onchange=${change}
+          onchange=${(evt) => {
+            change(evt);
+            if (evt.currentTarget.checked) {
+              scrollToSection(evt, pack.id);
+            }
+          }}
         />`}
       </div>
     </a>
