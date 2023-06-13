@@ -370,7 +370,6 @@ class App extends Component {
           iconOverride="settings"
         />
       </nav>
-      <${SearchBox} onKeyUp=${this.searchStickers} />
       <div
         class="pack-list ${isMobileSafari ? "ios-safari-hack" : ""}"
         ref=${(elem) => (this.packListRef = elem)}
