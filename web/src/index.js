@@ -486,7 +486,7 @@ const NavBarItem = ({
           type="checkbox"
           checked=${myStickerIds.includes(pack.id)}
           data-sticker-id=${pack.id}
-          onchange=${(evt) => {
+          onChange=${(evt) => {
             change(evt);
             if (evt.currentTarget.checked) {
               location.hash = `pack-${pack.id}`;
