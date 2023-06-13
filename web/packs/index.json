@@ -12,7 +12,8 @@
     "NationHearts.json",
     "Jinitime.json",
     "Samnammae.json",
-    "Blackwargrey.json"
+    "Blackwargrey.json",
+    "Kupangplay.json"
   ],
   "homeserver_url": "https://matrix-client.matrix.org"
 }
