@@ -387,7 +387,7 @@ class App extends Component {
               send=${this.sendSticker}
               enabled=${pack.id === "frequently-used" ||
               pack.id === "settings" ||
-              this.state.myStickerIds.some((myId) => pack.id === myId)}
+              this.state.myStickerIds.includes(pack.id)}
             />`
         )}
         <${Settings} app=${this} />
