@@ -13,22 +13,32 @@
 //
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
-const MY_STICKER_ID = JSON.parse(window.localStorage.mauFrequentlyUsedStickerIDs || "{}")
-let FREQUENTLY_USED_SORTED = null
 
-export const add = id => {
-	const [count] = MY_STICKER_ID[id] || [0]
-	MY_STICKER_ID[id] = [count + 1, Date.now()]
-	window.localStorage.mauFrequentlyUsedStickerIDs = JSON.stringify(MY_STICKER_ID)
-	FREQUENTLY_USED_SORTED = null
-}
+export const StickerAPI = {
+  getMyStickerIds: () => {
+    return JSON.parse(window.localStorage.myStickerId || "[]");
+  },
 
-export const get = (limit = 16) => {
-	if (FREQUENTLY_USED_SORTED === null) {
-		FREQUENTLY_USED_SORTED = Object.entries(MY_STICKER_ID)
-			.sort(([, [count1, date1]], [, [count2, date2]]) =>
-				count2 === count1 ? date2 - date1 : count2 - count1)
-			.map(([emoji]) => emoji)
-	}
-	return FREQUENTLY_USED_SORTED.slice(0, limit)
-}
+  addMySticker: (id) => {
+    const myStickerId = StickerAPI.getMyStickerIds();
+    if (myStickerId.includes(id)) {
+      return false;
+    }
+
+    const newStickerId = [...myStickerId];
+    newStickerId.push(id);
+    window.localStorage.myStickerId = JSON.stringify(newStickerId);
+    return newStickerId;
+  },
+
+  removeMySticker: (id) => {
+    const myStickerId = StickerAPI.getMyStickerIds();
+    if (!myStickerId.includes(id)) {
+      return false;
+    }
+
+    const newStickerId = myStickerId.filter((myId) => myId !== id);
+    window.localStorage.myStickerId = JSON.stringify(newStickerId);
+    return newStickerId;
+  },
+};

@@ -18,6 +18,7 @@ import { Spinner } from "./spinner.js";
 import { SearchBox } from "./search-box.js";
 import * as widgetAPI from "./widget-api.js";
 import * as frequent from "./frequently-used.js";
+import { StickerAPI } from "./selected-sticker.js";
 
 // The base URL for fetching packs. The app will first fetch ${PACK_BASE_URL}/index.json,
 // then ${PACK_BASE_URL}/${packFile} for each packFile in the packs object of the index.json file.
@@ -69,7 +70,7 @@ class App extends Component {
         stickerIDs: frequent.get(),
         stickers: [],
       },
-      myStickerIds: [],
+      myStickerIds: StickerAPI.getMyStickerIds(),
       filtering: defaultState.filtering,
     };
     if (!supportedThemes.includes(this.state.theme)) {
@@ -118,25 +119,31 @@ class App extends Component {
   }
 
   addMySticker(id) {
-    let myStickerIds = this.state.myStickerIds.slice(0);
-    if (!myStickerIds.includes(id)) {
-      const newStickerIds = this.state.myStickerIds.slice(0);
-      newStickerIds.push(id);
-      this.setState({
-        myStickerIds: newStickerIds,
-      });
+    const newStickerIds = StickerAPI.addMySticker(id);
+    if (!newStickerIds) {
+      return;
     }
+
+    this.setState({
+      myStickerIds: newStickerIds,
+    });
   }
 
   updateMyStickerIds(evt) {
     const checked = evt.currentTarget.checked;
     const packId = evt.currentTarget.getAttribute("data-sticker-id");
-    let newStickerIds = this.state.myStickerIds.slice(0);
+
+    let newStickerIds = undefined;
     if (checked) {
-      newStickerIds.push(packId);
+      newStickerIds = StickerAPI.addMySticker(packId);
     } else {
-      newStickerIds = newStickerIds.filter((id) => id !== packId);
+      newStickerIds = StickerAPI.removeMySticker(packId);
     }
+
+    if (!newStickerIds) {
+      return;
+    }
+
     this.setState({
       myStickerIds: newStickerIds,
     });
