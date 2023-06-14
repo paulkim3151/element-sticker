@@ -22,6 +22,7 @@ body
 
 h1
   font-size: 1rem
+  margin: 0 0 0 .75rem
 
 \:root
   --stickers-per-row: 4
@@ -29,9 +30,7 @@ h1
 
 $nav-sticker-size: 12vw
 $nav-bottom-highlight: 2px
-$checkbox-size: 6vw
-$checkbox-padding: 2px
-$nav-height: calc(#{$nav-sticker-size} + #{$nav-bottom-highlight} + #{$checkbox-size} + #{$checkbox-padding} * 2)
+$nav-height: calc(#{$nav-sticker-size} + #{$nav-bottom-highlight})
 $nav-height-inverse: calc(-#{$nav-sticker-size} - #{$nav-bottom-highlight})
 
 $search-box-icon-size: 1rem
@@ -59,7 +58,7 @@ main
     right: 0
     bottom: 0
     display: grid
-    grid-template-rows: $nav-height auto
+    grid-template-rows: $nav-height auto 50px
 
 main.theme-light
   --highlight-color: #eee
@@ -92,7 +91,10 @@ main.theme-black
     --icon-image: url(../res/settings.svg)
 
   &.icon-recent
-    --icon-image: url(../res/recent.svg)
+    --icon-image: url(../res/history.svg)
+  
+  &.icon-back
+    --icon-image: url(../res/go-back.svg)
 
   &.icon.icon-search
     --icon-image: url(../res/search.svg)
@@ -100,14 +102,6 @@ main.theme-black
 nav
   display: flex
   overflow-x: auto
-  .sticker-checkbox
-    display: flex
-    align-items: center
-    justify-content: center
-    input[type="checkbox"]
-      width: $checkbox-size
-      height: $checkbox-size
-      margin: $checkbox-padding 0
 
   > a
     border-bottom: $nav-bottom-highlight solid transparent
@@ -149,9 +143,6 @@ section.stickerpack
   > div.sticker-list
     display: flex
     flex-wrap: wrap
-
-  > h1
-    margin: 0 0 0 .75rem
 
 div.sticker
   display: flex
@@ -217,3 +208,21 @@ div.settings-list
 
   input
     width: 100%
+
+div.sticker-setting
+  display: flex
+  align-items: center
+  input
+    flex: 1
+  & > *
+    margin: 8px
+
+div.sticker-select
+  position: relative
+
+  & > input[type="checkbox"]
+    width: 20%
+    height: 20%
+    position: absolute
+    right: 5px
+    bottom: 5px

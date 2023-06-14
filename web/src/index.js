@@ -72,6 +72,7 @@ class App extends Component {
       },
       myStickerIds: StickerAPI.getMyStickerIds(),
       filtering: defaultState.filtering,
+      settingPage: false,
     };
     if (!supportedThemes.includes(this.state.theme)) {
       this.state.theme = "light";
@@ -124,6 +125,13 @@ class App extends Component {
       return;
     }
 
+    this.setState({
+      myStickerIds: newStickerIds,
+    });
+  }
+
+  toggleMyStickerIds(id) {
+    const newStickerIds = StickerAPI.toggleMySticker(id);
     this.setState({
       myStickerIds: newStickerIds,
     });
@@ -284,6 +292,10 @@ class App extends Component {
     for (const entry of intersections) {
       const packID = entry.target.getAttribute("data-pack-id");
       const navElement = document.getElementById(`nav-${packID}`);
+      if (!navElement) {
+        return;
+      }
+
       if (entry.isIntersecting) {
         navElement.classList.add("visible");
         const bb = navElement.getBoundingClientRect();
@@ -356,26 +368,94 @@ class App extends Component {
       </main>`;
     }
 
+    if (this.state.settingPage) {
+      return html`<main class="has-content ${theme}">
+        <nav class="setting-title">
+          <a
+            title="설정"
+            onClick=${() => this.setState({ settingPage: false })}
+          >
+            <div class="sticker">
+              <span class="icon icon-back" />
+            </div>
+          </a>
+        </nav>
+
+        <div
+          class="pack-list ${isMobileSafari ? "ios-safari-hack" : ""}"
+          ref=${(elem) => (this.packListRef = elem)}
+        >
+          <section class="stickerpack">
+            <div class="settings-list">
+              <button onClick=${this.reloadPacks}>스티커 팩 새로고침</button>
+              <div>
+                <label for="theme">Theme: </label>
+                <select
+                  name="theme"
+                  id="theme"
+                  onChange=${(evt) => this.setTheme(evt.target.value)}
+                >
+                  <option value="default">Default</option>
+                  <option value="light">Light</option>
+                  <option value="dark">Dark</option>
+                  <option value="black">Black</option>
+                </select>
+              </div>
+            </div>
+          </section>
+          <section class="stickerpack">
+            <h1>스티커 팩 선택</h1>
+            <div class="sticker-list">
+              ${packs.map((pack) => {
+                if (pack.id === "frequently-used") {
+                  return;
+                }
+                return html`<div class="sticker-select">
+                  <${Sticker}
+                    key=${pack.stickers[0].id}
+                    content=${pack.stickers[0]}
+                    send=${() => this.toggleMyStickerIds(pack.id)}
+                  />
+                  <input
+                    type="checkbox"
+                    checked=${this.state.myStickerIds.includes(pack.id)}
+                  />
+                </div>`;
+              })}
+            </div>
+          </section>
+        </div>
+        <${StickerSetting} app=${this} />
+      </main> `;
+    }
+
     return html`<main class="has-content ${theme}">
       <nav onWheel=${this.navScroll} ref=${(elem) => (this.navRef = elem)}>
+        <a
+          title="설정"
+          onClick=${() =>
+            this.setState({ settingPage: !this.state.settingPage })}
+        >
+          <div class="sticker">
+            <span class="icon icon-settings" />
+          </div>
+        </a>
         <${NavBarItem}
           pack=${this.state.frequentlyUsed}
           iconOverride="recent"
         />
-        ${this.state.packs.map(
-          (pack) =>
-            html`<${NavBarItem}
-              id=${pack.id}
-              pack=${pack}
-              change=${this.updateMyStickerIds.bind(this)}
-              myStickerIds=${this.state.myStickerIds}
-              addMySticker=${this.addMySticker.bind(this)}
-            />`
-        )}
-        <${NavBarItem}
-          pack=${{ id: "settings", title: "설정" }}
-          iconOverride="settings"
-        />
+        ${this.state.packs
+          .filter((pack) => this.state.myStickerIds.includes(pack.id))
+          .map(
+            (pack) =>
+              html`<${NavBarItem}
+                id=${pack.id}
+                pack=${pack}
+                change=${this.updateMyStickerIds.bind(this)}
+                myStickerIds=${this.state.myStickerIds}
+                addMySticker=${this.addMySticker.bind(this)}
+              />`
+          )}
       </nav>
       <div
         class="pack-list ${isMobileSafari ? "ios-safari-hack" : ""}"
@@ -397,51 +477,11 @@ class App extends Component {
               this.state.myStickerIds.includes(pack.id)}
             />`
         )}
-        <${Settings} app=${this} />
       </div>
+      <${StickerSetting} app=${this} />
     </main>`;
   }
 }
-
-const Settings = ({ app }) => html`
-  <section
-    class="stickerpack settings"
-    id="pack-settings"
-    data-pack-id="settings"
-  >
-    <h1>스티커 팩 설정</h1>
-    <div class="settings-list">
-      <button onClick=${app.reloadPacks}>스티커 팩 새로고침</button>
-      <div>
-        <label for="stickers-per-row"
-          >한 줄에 표시될 스티커 갯수: ${app.state.stickersPerRow}</label
-        >
-        <input
-          type="range"
-          min="2"
-          max="10"
-          id="stickers-per-row"
-          id="stickers-per-row"
-          value=${app.state.stickersPerRow}
-          onInput=${(evt) => app.setStickersPerRow(evt.target.value)}
-        />
-      </div>
-      <div>
-        <label for="theme">Theme: </label>
-        <select
-          name="theme"
-          id="theme"
-          onChange=${(evt) => app.setTheme(evt.target.value)}
-        >
-          <option value="default">Default</option>
-          <option value="light">Light</option>
-          <option value="dark">Dark</option>
-          <option value="black">Black</option>
-        </select>
-      </div>
-    </div>
-  </section>
-`;
 
 // By default we just let the browser handle scrolling to sections, but webviews on Element iOS
 // open the link in the browser instead of just scrolling there, so we need to scroll manually:
@@ -459,10 +499,6 @@ const NavBarItem = ({
   addMySticker,
 }) => {
   const handleItemClicked = (evt) => {
-    if (!myStickerIds.includes(pack.id)) {
-      addMySticker(pack.id);
-    }
-
     if (isMobileSafari) {
       scrollToSection(evt, pack.id);
     }
@@ -485,22 +521,6 @@ const NavBarItem = ({
                 class="visible"
               />
             `}
-      </div>
-      <div class="sticker-checkbox">
-        ${pack.id !== "frequently-used" &&
-        pack.id !== "settings" &&
-        html`<input
-          type="checkbox"
-          checked=${myStickerIds.includes(pack.id)}
-          data-sticker-id=${pack.id}
-          onChange=${(evt) => {
-            change(evt);
-            if (evt.currentTarget.checked) {
-              location.hash = `pack-${pack.id}`;
-              scrollToSection(evt, pack.id);
-            }
-          }}
-        />`}
       </div>
     </a>
   `;
@@ -532,5 +552,20 @@ const Sticker = ({ content, send }) => html`
     />
   </div>
 `;
+
+const StickerSetting = ({ app }) => html`<div class="sticker-setting">
+  <label for="stickers-per-row"
+    >한 줄에 표시될 스티커 갯수: ${app.state.stickersPerRow}</label
+  >
+  <input
+    type="range"
+    min="2"
+    max="10"
+    id="stickers-per-row"
+    id="stickers-per-row"
+    value=${app.state.stickersPerRow}
+    onInput=${(evt) => app.setStickersPerRow(evt.target.value)}
+  />
+</div>`;
 
 render(html`<${App} />`, document.body);

@@ -41,4 +41,13 @@ export const StickerAPI = {
     window.localStorage.myStickerId = JSON.stringify(newStickerId);
     return newStickerId;
   },
+
+  toggleMySticker: (id) => {
+    const myStickerId = StickerAPI.getMyStickerIds();
+    if (myStickerId.includes(id)) {
+      return StickerAPI.removeMySticker(id);
+    } else {
+      return StickerAPI.addMySticker(id);
+    }
+  },
 };
