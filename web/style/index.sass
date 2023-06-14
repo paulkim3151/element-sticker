@@ -234,15 +234,16 @@ div.no-sticker-pack
   align-items: center
   text-align: center
 
-  span
-    display: inline-flex
-    align-items: center
 
   h1
     font-size: 1.5rem
+    > span
+      display: inline-flex
+      align-items: center
 
 span.icon-text
   width: 1.5rem
   height: 1.5rem
   margin: 5px
   transform: translateY(0.05rem)
+  flex-shrink: 0

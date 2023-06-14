@@ -471,8 +471,8 @@ class App extends Component {
               <h1>
                 <span>선택된 스티커 팩이 없습니다.</span>
                 <span
-                  ><span class="icon icon-settings icon-text" />버튼을 눌러서
-                  스티커를 선택해주세요.</span
+                  ><span class="icon icon-settings icon-text" />버튼을 눌러서</span>
+                  <span>스티커를 선택해주세요.</span
                 >
               </h1>
             </div>`
