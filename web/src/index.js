@@ -471,8 +471,8 @@ class App extends Component {
               <h1>
                 <span>선택된 스티커 팩이 없습니다. </span>
                 <span
-                  ><span class="icon icon-settings icon-text" />버튼을 눌러서 </span>
-                  <span>스티커를 선택해주세요.</span
+                  ><span class="icon icon-settings icon-text" />
+                  <span>버튼을 눌러서 스티커를 선택해주세요.</span></span
                 >
               </h1>
             </div>`
@@ -564,9 +564,7 @@ const Sticker = ({ content, send }) => html`
 `;
 
 const StickerSetting = ({ app }) => html`<div class="sticker-setting">
-  <label for="stickers-per-row"
-    >한 줄에 표시될 스티커 갯수: ${app.state.stickersPerRow}</label
-  >
+  <label for="stickers-per-row">스티커 크기</label>
   <input
     type="range"
     min="2"
