@@ -466,17 +466,27 @@ class App extends Component {
               <h1>No stickers match your search</h1>
             </div>`
           : null}
-        ${packs.map(
-          (pack) =>
-            html`<${Pack}
-              id=${pack.id}
-              pack=${pack}
-              send=${this.sendSticker}
-              enabled=${pack.id === "frequently-used" ||
-              pack.id === "settings" ||
-              this.state.myStickerIds.includes(pack.id)}
-            />`
-        )}
+        ${this.state.myStickerIds.length === 0
+          ? html`<div class="no-sticker-pack">
+              <h1>
+                <span>선택된 스티커 팩이 없습니다.</span>
+                <span
+                  ><span class="icon icon-settings icon-text" />버튼을 눌러서
+                  스티커를 선택해주세요.</span
+                >
+              </h1>
+            </div>`
+          : packs.map(
+              (pack) =>
+                html`<${Pack}
+                  id=${pack.id}
+                  pack=${pack}
+                  send=${this.sendSticker}
+                  enabled=${pack.id === "frequently-used" ||
+                  pack.id === "settings" ||
+                  this.state.myStickerIds.includes(pack.id)}
+                />`
+            )}
       </div>
       <${StickerSetting} app=${this} />
     </main>`;
