@@ -469,9 +469,9 @@ class App extends Component {
         ${this.state.myStickerIds.length === 0
           ? html`<div class="no-sticker-pack">
               <h1>
-                <span>선택된 스티커 팩이 없습니다.</span>
+                <span>선택된 스티커 팩이 없습니다. </span>
                 <span
-                  ><span class="icon icon-settings icon-text" />버튼을 눌러서</span>
+                  ><span class="icon icon-settings icon-text" />버튼을 눌러서 </span>
                   <span>스티커를 선택해주세요.</span
                 >
               </h1>
